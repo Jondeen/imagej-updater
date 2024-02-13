@@ -449,7 +449,8 @@ public class Checksummer extends AbstractProgressable {
 		{ "licenses" }, { "" },
 		{ "mm" }, { "" },
 		{ "mmautofocus" }, { "" },
-		{ "mmplugins" }, { "" }
+		{ "mmplugins" }, { "" },
+		{ "/" }, { ".lnk" }
 	};
 
 	protected static final Map<String, Set<String>> extensions;
@@ -468,7 +469,12 @@ public class Checksummer extends AbstractProgressable {
 	public boolean isCandidate(String path) {
 		path = path.replace('\\', '/'); // Microsoft time toll
 		final int slash = path.indexOf('/');
-		if (slash < 0) return files.util.isLauncher(path);
+		if (slash < 0) {
+			if (files.util.isLauncher(path)) return true;
+			final Set<String> exts = extensions.get("/");
+			final int dot = path.lastIndexOf('.');
+			return exts == null || dot < 0 ? false : exts.contains(path.substring(dot));
+		}
 		final Set<String> exts = extensions.get(path.substring(0, slash));
 		final int dot = path.lastIndexOf('.');
 		return exts == null || dot < 0 ? false : exts.contains(path.substring(dot));
